@@ -99,6 +99,8 @@ async function handelContent(dir, content, isCnt = true) {
                 // request(fileUrl).pipe(fs.createWriteStream(localFile))
             }
 
+            // console.log(downFiles)
+
             downFiles.forEach(file => {
                 download(file.fileUrl, file.localDir).then(() => {
                         downCount++
@@ -110,6 +112,9 @@ async function handelContent(dir, content, isCnt = true) {
                     }, (err) => {
                         downCount++
                         errDownloadUrls.push(file.fileUrl)
+                        if(downCount === matchCount){
+                            resolve(content)
+                        }
                         // console.log(err)
                         // reject(err)
                     }
@@ -258,7 +263,12 @@ async function getData(siteid, lastGetTime) {
                 }
                 if(cats[i].content){
                     let cnt = cats[i].content
-                    cnt = await handelContent(siteDir, cnt)
+                    try{
+                      cnt = await handelContent(siteDir, cnt)
+                    } catch (err) {
+                        console.log(err)
+                    }
+
                     cats[i].content = cnt
                 }
             }
